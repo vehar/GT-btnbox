@@ -51,6 +51,7 @@
 #include "stm32f0xx_ll_utils.h"
 #include "stm32f0xx_ll_pwr.h"
 #include "stm32f0xx_ll_dma.h"
+#include "stm32f0xx_ll_usart.h"
 #include "stm32f0xx_ll_gpio.h"
 
 /* USER CODE BEGIN Includes */
@@ -59,6 +60,8 @@
 
 /* Private define ------------------------------------------------------------*/
 
+#define DbgLed_Pin LL_GPIO_PIN_7
+#define DbgLed_GPIO_Port GPIOF
 #ifndef NVIC_PRIORITYGROUP_0
 #define NVIC_PRIORITYGROUP_0         ((uint32_t)0x00000007) /*!< 0 bit  for pre-emption priority,
                                                                  4 bits for subpriority */

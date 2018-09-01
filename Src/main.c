@@ -38,6 +38,7 @@
   */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "usart.h"
 #include "gpio.h"
 
 /* USER CODE BEGIN Includes */
@@ -93,8 +94,11 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  LL_GPIO_SetOutputPin(DbgLed_GPIO_Port, DbgLed_Pin);
+  LL_mDelay(1000);
+  LL_GPIO_ResetOutputPin(DbgLed_GPIO_Port, DbgLed_Pin);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -166,6 +170,8 @@ void SystemClock_Config(void)
   LL_SYSTICK_SetClkSource(LL_SYSTICK_CLKSOURCE_HCLK);
 
   LL_SetSystemCoreClock(8000000);
+
+  LL_RCC_SetUSARTClockSource(LL_RCC_USART1_CLKSOURCE_PCLK1);
 
   /* SysTick_IRQn interrupt configuration */
   NVIC_SetPriority(SysTick_IRQn, 0);
