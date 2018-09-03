@@ -1,6 +1,7 @@
 # Prerequisites
 *.d
 *.bak
+*.crf 
 
 # Object files
 *.o

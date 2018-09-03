@@ -45,9 +45,7 @@
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f0xx_ll_system.h"
-#include "stm32f0xx_ll_gpio.h"
-#include "stm32f0xx_ll_exti.h"
+#include "stm32f0xx_hal.h"
 #include "main.h"
 
 /* USER CODE BEGIN Includes */

@@ -38,6 +38,7 @@
   */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "stm32f0xx_hal.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -53,7 +54,6 @@
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
-static void LL_Init(void);
 void SystemClock_Config(void);
 
 /* USER CODE BEGIN PFP */
@@ -66,7 +66,7 @@ void SystemClock_Config(void);
 //http://www.rotr.info/electronics/mcu/stm32f100/stm32_exti.htm 
 void U_EXTI_Init(void)
 {
-    LL_SYSCFG_SetEXTISource(LL_SYSCFG_EXTI_PORTA, LL_SYSCFG_EXTI_LINE0);
+ /*  LL_SYSCFG_SetEXTISource(LL_SYSCFG_EXTI_PORTA, LL_SYSCFG_EXTI_LINE0);
 	LL_SYSCFG_SetEXTISource(LL_SYSCFG_EXTI_PORTB, LL_SYSCFG_EXTI_LINE0);
 	LL_SYSCFG_SetEXTISource(LL_SYSCFG_EXTI_PORTC, LL_SYSCFG_EXTI_LINE0);
 	LL_SYSCFG_SetEXTISource(LL_SYSCFG_EXTI_PORTF, LL_SYSCFG_EXTI_LINE0);
@@ -77,7 +77,7 @@ void U_EXTI_Init(void)
 	EXTIinitStruct.Mode = LL_EXTI_MODE_IT_EVENT;
 	EXTIinitStruct.Trigger = LL_EXTI_TRIGGER_RISING_FALLING;
 	LL_EXTI_Init(&EXTIinitStruct);
-		
+	*/	
 }
 /* USER CODE END 0 */
 
@@ -95,7 +95,7 @@ int main(void)
   /* MCU Configuration----------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  LL_Init();
+  HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -112,14 +112,14 @@ int main(void)
   MX_GPIO_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-  LL_GPIO_SetOutputPin(DbgLed_GPIO_Port, DbgLed_Pin);
-  LL_mDelay(3000);
-  LL_GPIO_ResetOutputPin(DbgLed_GPIO_Port, DbgLed_Pin);
+  //LL_GPIO_SetOutputPin(DbgLed_GPIO_Port, DbgLed_Pin);
+  //LL_mDelay(3000);
+  //LL_GPIO_ResetOutputPin(DbgLed_GPIO_Port, DbgLed_Pin);
   
   U_EXTI_Init();
   
-  LL_LPM_EnableEventOnPend();
-  LL_LPM_EnableDeepSleep();
+  //LL_LPM_EnableEventOnPend();
+  //LL_LPM_EnableDeepSleep();
   __WFI();
   __WFI();
   //LL_LPM_EnableSleep();
@@ -140,23 +140,6 @@ int main(void)
 
 }
 
-static void LL_Init(void)
-{
-  
-
-  LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_SYSCFG);
-  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_PWR);
-
-  /* System interrupt init*/
-  /* SVC_IRQn interrupt configuration */
-  NVIC_SetPriority(SVC_IRQn, 0);
-  /* PendSV_IRQn interrupt configuration */
-  NVIC_SetPriority(PendSV_IRQn, 0);
-  /* SysTick_IRQn interrupt configuration */
-  NVIC_SetPriority(SysTick_IRQn, 0);
-
-}
-
 /**
   * @brief System Clock Configuration
   * @retval None
@@ -164,42 +147,51 @@ static void LL_Init(void)
 void SystemClock_Config(void)
 {
 
-  LL_FLASH_SetLatency(LL_FLASH_LATENCY_0);
+  RCC_OscInitTypeDef RCC_OscInitStruct;
+  RCC_ClkInitTypeDef RCC_ClkInitStruct;
+  RCC_PeriphCLKInitTypeDef PeriphClkInit;
 
-  if(LL_FLASH_GetLatency() != LL_FLASH_LATENCY_0)
+    /**Initializes the CPU, AHB and APB busses clocks 
+    */
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+  RCC_OscInitStruct.HSICalibrationValue = 16;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
-  Error_Handler();  
+    _Error_Handler(__FILE__, __LINE__);
   }
-  LL_RCC_HSI_Enable();
 
-   /* Wait till HSI is ready */
-  while(LL_RCC_HSI_IsReady() != 1)
+    /**Initializes the CPU, AHB and APB busses clocks 
+    */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
+
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
   {
-    
+    _Error_Handler(__FILE__, __LINE__);
   }
-  LL_RCC_HSI_SetCalibTrimming(16);
 
-  LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
-
-  LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_1);
-
-  LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_HSI);
-
-   /* Wait till System clock is ready */
-  while(LL_RCC_GetSysClkSource() != LL_RCC_SYS_CLKSOURCE_STATUS_HSI)
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART1;
+  PeriphClkInit.Usart1ClockSelection = RCC_USART1CLKSOURCE_PCLK1;
+  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
-  
+    _Error_Handler(__FILE__, __LINE__);
   }
-  LL_Init1msTick(8000000);
 
-  LL_SYSTICK_SetClkSource(LL_SYSTICK_CLKSOURCE_HCLK);
+    /**Configure the Systick interrupt time 
+    */
+  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
 
-  LL_SetSystemCoreClock(8000000);
-
-  LL_RCC_SetUSARTClockSource(LL_RCC_USART1_CLKSOURCE_PCLK1);
+    /**Configure the Systick 
+    */
+  HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
 
   /* SysTick_IRQn interrupt configuration */
-  NVIC_SetPriority(SysTick_IRQn, 0);
+  HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 }
 
 /* USER CODE BEGIN 4 */
