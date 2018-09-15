@@ -49,8 +49,8 @@
 
 /* Private define ------------------------------------------------------------*/
 
-#define DbgLed_Pin GPIO_PIN_7
-#define DbgLed_GPIO_Port GPIOF
+#define DBG_LED_Pin GPIO_PIN_7
+#define DBG_LED_GPIO_Port GPIOF
 
 /* ########################## Assert Selection ############################## */
 /**
