@@ -112,6 +112,16 @@ int main(void)
   MX_GPIO_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+	HAL_NVIC_SetPriority(EXTI0_1_IRQn, 3, 0);
+	HAL_NVIC_SetPriority(EXTI2_3_IRQn, 3, 0);
+	HAL_NVIC_SetPriority(EXTI4_15_IRQn, 3, 0);
+	
+    HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
+	HAL_NVIC_EnableIRQ(EXTI2_3_IRQn);
+	HAL_NVIC_EnableIRQ(EXTI4_15_IRQn);
+
+	HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
+
   //LL_GPIO_SetOutputPin(DbgLed_GPIO_Port, DbgLed_Pin);
   //LL_mDelay(3000);
   //LL_GPIO_ResetOutputPin(DbgLed_GPIO_Port, DbgLed_Pin);
@@ -129,8 +139,14 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
-  {
-
+  {		
+		//Test
+		/*
+		HAL_Delay(500);
+		HAL_GPIO_WritePin(DbgLed_GPIO_Port, DbgLed_Pin, GPIO_PIN_SET);
+		HAL_Delay(500);	  
+		HAL_GPIO_WritePin(DbgLed_GPIO_Port, DbgLed_Pin, GPIO_PIN_RESET);
+		*/
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
@@ -199,15 +215,32 @@ void SystemClock_Config(void)
 
 void EXTI0_1_IRQHandler(void)
 {
-	EXTI->PR = EXTI->PR;
+	//EXTI->PR = EXTI->PR;
+	
+	 /* USER CODE BEGIN EXTI0_IRQn 0 */
+    //if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)) 
+	{
+		HAL_GPIO_TogglePin(GPIOF, DbgLed_Pin);
+	}
+
+    /* USER CODE END EXTI0_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
+  /* USER CODE BEGIN EXTI0_IRQn 1 */
+
+  /* USER CODE END EXTI0_IRQn 1 */
+	
 }
 void EXTI2_3_IRQHandler(void)
 {
 	EXTI->PR = EXTI->PR;
+	
+	HAL_GPIO_TogglePin(GPIOF, DbgLed_Pin);
 }
 void EXTI4_15_IRQHandler(void)
 {
 	EXTI->PR = EXTI->PR;
+	
+	HAL_GPIO_TogglePin(GPIOF, DbgLed_Pin);
 }
 
 /* USER CODE END 4 */
