@@ -65,21 +65,7 @@ static void MX_NVIC_Init(void);
 /* USER CODE BEGIN 0 */
 
 //http://www.rotr.info/electronics/mcu/stm32f100/stm32_exti.htm 
-void U_EXTI_Init(void)
-{
- /*  LL_SYSCFG_SetEXTISource(LL_SYSCFG_EXTI_PORTA, LL_SYSCFG_EXTI_LINE0);
-	LL_SYSCFG_SetEXTISource(LL_SYSCFG_EXTI_PORTB, LL_SYSCFG_EXTI_LINE0);
-	LL_SYSCFG_SetEXTISource(LL_SYSCFG_EXTI_PORTC, LL_SYSCFG_EXTI_LINE0);
-	LL_SYSCFG_SetEXTISource(LL_SYSCFG_EXTI_PORTF, LL_SYSCFG_EXTI_LINE0);
-	
-	LL_EXTI_InitTypeDef EXTIinitStruct = {0};
-	EXTIinitStruct.Line_0_31 = 0xFF; //LL_EXTI_LINE_0;
-	EXTIinitStruct.LineCommand = ENABLE;
-	EXTIinitStruct.Mode = LL_EXTI_MODE_IT_EVENT;
-	EXTIinitStruct.Trigger = LL_EXTI_TRIGGER_RISING_FALLING;
-	LL_EXTI_Init(&EXTIinitStruct);
-	*/	
-}
+
 /* USER CODE END 0 */
 
 /**
@@ -116,24 +102,9 @@ int main(void)
   /* Initialize interrupts */
   MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
-	HAL_NVIC_SetPriority(EXTI0_1_IRQn, 3, 0);
-	HAL_NVIC_SetPriority(EXTI2_3_IRQn, 3, 0);
-	HAL_NVIC_SetPriority(EXTI4_15_IRQn, 3, 0);
-	
-    HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
-	HAL_NVIC_EnableIRQ(EXTI2_3_IRQn);
-	HAL_NVIC_EnableIRQ(EXTI4_15_IRQn);
 
 	HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 
-  //LL_GPIO_SetOutputPin(DbgLed_GPIO_Port, DBG_LED);
-  //LL_mDelay(3000);
-  //LL_GPIO_ResetOutputPin(DbgLed_GPIO_Port, DBG_LED);
-  
-  U_EXTI_Init();
-  
-  //LL_LPM_EnableEventOnPend();
-  //LL_LPM_EnableDeepSleep();
   __WFI();
   __WFI();
   //LL_LPM_EnableSleep();
